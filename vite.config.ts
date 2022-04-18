@@ -1,15 +1,15 @@
-import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
-import { ConfigEnv, loadEnv, UserConfigExport } from 'vite'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import { presetAttributify, presetUno } from 'unocss'
-import { resolve } from 'path'
-import { viteMockServe } from 'vite-plugin-mock'
-import Components from 'unplugin-vue-components/vite'
-import eslintPlugin from 'vite-plugin-eslint'
-import styleImport from 'vite-plugin-style-import'
-import Unocss from 'unocss/vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import { resolve } from 'path'
+import { presetAttributify, presetIcons, presetUno } from 'unocss'
+import Unocss from 'unocss/vite'
+import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
+import { ConfigEnv, loadEnv, UserConfigExport } from 'vite'
+import eslintPlugin from 'vite-plugin-eslint'
+import { viteMockServe } from 'vite-plugin-mock'
+import styleImport from 'vite-plugin-style-import'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
@@ -38,7 +38,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
     server: {
       host: true,
       port: 3100,
-      // Load proxy configuration from .env
       proxy: {},
     },
     esbuild: {
@@ -79,7 +78,16 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
         fix: true,
       }),
       Unocss({
-        presets: [presetAttributify({}), presetUno()],
+        presets: [
+          presetAttributify({}),
+          presetUno(),
+          presetIcons({
+            collections: {
+              antd: () =>
+                import('@iconify-json/ant-design/icons.json').then((i) => i.default as any),
+            },
+          }),
+        ],
         rules: [],
         shortcuts: {},
         theme: {},
